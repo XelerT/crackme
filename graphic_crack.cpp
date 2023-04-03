@@ -4,45 +4,6 @@
 
 #include "graphic_crack.h"
 
-class my_stream_c : public sf::SoundStream
-{
-        public:
-
-        void load (const sf::SoundBuffer& buffer)
-        {
-                m_samples.assign(buffer.getSamples(), buffer.getSamples() + buffer.getSampleCount());
-                m_currentSample = 0;
-                initialize(buffer.getChannelCount(), buffer.getSampleRate());
-        }
-
-        private:
-
-        virtual bool onGetData (Chunk& data)
-        {
-                const int samplesToStream = 50000;
-
-                data.samples = &m_samples[m_currentSample];
-
-                if (m_currentSample + samplesToStream <= m_samples.size()) {
-                        data.sampleCount = samplesToStream;
-                        m_currentSample += samplesToStream;
-                        return true;
-                } else {
-                        data.sampleCount = m_samples.size() - m_currentSample;
-                        m_currentSample = m_samples.size();
-                        return false;
-                }
-        }
-
-        virtual void onSeek(sf::Time timeOffset)
-        {
-                m_currentSample = static_cast<std::size_t>(timeOffset.asSeconds() * getSampleRate() * getChannelCount());
-        }
-
-        std::vector<sf::Int16> m_samples;
-        std::size_t m_currentSample;
-};
-
 static const float MAX_PROGRESS_LENGTH = 600.f;
 
 int play_gif_progress_bar (char *gif_folder)
@@ -58,9 +19,9 @@ int play_gif_progress_bar (char *gif_folder)
         sf::SoundBuffer buffer;
         buffer.loadFromFile("sound.wav");
 
-        my_stream_c stream;
-        stream.load(buffer);
-        stream.play();
+        sf::Sound sound;
+        sound.setBuffer(buffer);
+        sound.play();
 
         double progress_bar_length = 10;
         double progress_bar_y = 50;
@@ -70,11 +31,13 @@ int play_gif_progress_bar (char *gif_folder)
         int frame_counter = 0;
         char frame_name[30] = {'\0'};
 
-        while (window.isOpen() && stream.getStatus() == my_stream_c::Playing && progress_bar_length / 10 <= MAX_PROGRESS_LENGTH) {
+        while (window.isOpen() && progress_bar_length / 10 <= MAX_PROGRESS_LENGTH) {
                 sf::Event event;
                 while (window.pollEvent(event)) {
-                        if (event.type == sf::Event::Closed || progress_bar_length > MAX_PROGRESS_LENGTH)
+                        if (event.type == sf::Event::Closed || progress_bar_length > MAX_PROGRESS_LENGTH) {
                                 window.close();
+                                sound.stop();
+                        }
                 }
 
                 sf::sleep(sf::seconds(0.1f));

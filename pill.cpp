@@ -72,7 +72,6 @@ int change_in_adress (text_t *text, int address, unsigned char *new_code, int n_
         assert(new_code);
 
         for (int i = 0; i < n_bytes; i++, address++) {
-                printf("%x %x\n", text->buf[address], new_code[i]);
                 text->buf[address] = new_code[i];
         }
 
