@@ -45,7 +45,7 @@ class my_stream_c : public sf::SoundStream
 
 static const float MAX_PROGRESS_LENGTH = 600.f;
 
-int play_gif_progress_bar ()
+int play_gif_progress_bar (char *gif_folder)
 {
         sf::RenderWindow window(sf::VideoMode(MAX_PROGRESS_LENGTH, 400), "Rewritting you...");
         sf::RectangleShape rectangle(sf::Vector2f(MAX_PROGRESS_LENGTH, 50.f));
@@ -86,7 +86,7 @@ int play_gif_progress_bar ()
 
                 progress_bar_length += 50;
 
-                print_i_frame(frame_name, frame_counter, &window);
+                print_i_frame(gif_folder, frame_name, frame_counter, &window);
 
                 if (frame_counter < n_frames)
                         frame_counter++;
@@ -97,10 +97,10 @@ int play_gif_progress_bar ()
         return 0;
 }
 
-void print_i_frame (char *frame_name, int frame_counter, sf::RenderWindow* window)
+void print_i_frame (char *gif_folder, char *frame_name, int frame_counter, sf::RenderWindow* window)
 {
         sf::Texture texture;
-        sprintf(frame_name, "gif/%d.tga", frame_counter);
+        sprintf(frame_name, "%s/%d.tga", gif_folder, frame_counter);
         texture.loadFromFile(frame_name);
 
         sf::Sprite sprite(texture);

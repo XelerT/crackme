@@ -2,6 +2,7 @@
 #define PILL_H
 
 enum errors {
+        NO_ARGS         = -6,
         NULL_FILE_PTR   = -5,
         NULL_TEXT_PTR   = -4,
         EMPTY_FILE      = -3,
@@ -22,8 +23,12 @@ struct text_t {
         line_t *lines = nullptr;
 };
 
-int get_text         (FILE *input, text_t *text, const char *file_name);
-int change_code      (unsigned char *what2change);
+const char CHANGE_BY_ADRESS = '1';
+
+int switch_code_changer         (int argument, text_t *text, int adress, unsigned char *new_code, int n_bytes);
+int change_code                 (unsigned char *what2change, unsigned char *new_code, int n_bytes);
 unsigned char* find_call2change (text_t *text);
+int change_in_adress            (text_t *text, int address, unsigned char *new_code, int n_bytes);
+int get_text                    (FILE *input, text_t *text, const char *file_name);
 
 #endif /*PILL_H*/
